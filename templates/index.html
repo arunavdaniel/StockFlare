@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fetch Stock Data</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            padding: 20px;
+        }
+        .error-message {
+            color: red;
+        }
+        .download-link {
+            display: inline-block;
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="mt-5 mb-4">Stock Data</h1>
+
+        <form action="/" method="post" id="fetchForm">
+            <div class="form-group">
+                <label for="tickers">Enter Tickers (comma-separated):</label>
+                <input type="text" class="form-control" id="tickers" name="tickers" required>
+            </div>
+
+            <div class="form-group">
+                <label for="start_date">Start Date:</label>
+                <input type="date" class="form-control" id="start_date" name="start_date" required>
+            </div>
+
+            <div class="form-group">
+                <label for="end_date">End Date:</label>
+                <input type="date" class="form-control" id="end_date" name="end_date" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary" id="fetchBtn">Fetch Prices and Returns</button>
+            <button type="reset" class="btn btn-secondary ml-2">Clear</button>
+        </form>
+
+        <div id="loadingIndicator" class="mt-4" style="display: none;">
+            <div class="spinner-border text-primary" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+            <span class="ml-2">Fetching data...</span>
+        </div>
+
+        {% if adjusted_prices_file %}
+        <div class="mt-4">
+            <h4>Download Adjusted Prices:</h4>
+            <a href="{{ url_for('static', filename=adjusted_prices_file.split('/')[-1]) }}" class="btn btn-success download-link" download>Download Adjusted Prices</a>
+        </div>
+        {% endif %}
+
+        {% if returns_file %}
+        <div class="mt-4">
+            <h4>Download Returns Data:</h4>
+            <a href="{{ url_for('static', filename=returns_file.split('/')[-1]) }}" class="btn btn-success download-link" download>Download Returns Data</a>
+        </div>
+        {% endif %}
+
+        {% if error %}
+        <p class="error-message mt-4">{{ error }}</p>
+        {% endif %}
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#fetchForm').submit(function() {
+                $('#fetchBtn').prop('disabled', true);
+                $('#loadingIndicator').show();
+            });
+
+            $('#fetchForm').on('reset', function() {
+                $('#loadingIndicator').hide();
+                $('#fetchBtn').prop('disabled', false);
+            });
+        });
+    </script>
+</body>
+</html>
